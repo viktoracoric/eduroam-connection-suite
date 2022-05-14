@@ -10,17 +10,18 @@ lozinka='lozinka wifija'
 command -v dmenu >/dev/null && chosen=$(echo -e "Wireless\nWired\nWired with hotspot\nHotspot only\nDisconnect\n" | dmenu -p "Type of connection: ") || echo -e "Nije instaliran dmenu. U nastavku upišite što točno želite:\n1 Wireless\n2 Wired\n3 Wired with hotspot\n4 Hotspot only\n5 Disconnect" && read chosen
 
 case $chosen in
-        Wireless|1) sudo wpa_supplicant -i $interfaceBezicni -c /etc/wpa_supplicant/eduroam &
+        Wireless|1*) sudo wpa_supplicant -i $interfaceBezicni -c /etc/wpa_supplicant/eduroam &
         sleep 15;sudo dhcpcd $interfaceBezicni;exit;;
-        Wired|2) sudo wpa_supplicant -D wired -i $interfaceZicni -c /etc/wpa_supplicant/eduroamw &
+        Wired|2*) sudo wpa_supplicant -D wired -i $interfaceZicni -c /etc/wpa_supplicant/eduroamw &
         sleep 5;sudo dhcpcd $interfaceZicni;exit;;
-        Wired\ with\ hotspot|3) sudo wpa_supplicant -D wired -i $interfaceZicni -c /etc/wpa_supplicant/eduroamw &
+        Wired\ with\ hotspot|3*) sudo wpa_supplicant -D wired -i $interfaceZicni -c /etc/wpa_supplicant/eduroamw &
         sleep 5;sudo dhcpcd $interfaceZicni
         sudo create_ap $interfaceBezicni $interfaceZicni $ssid $lozinka &>/dev/null &
         exit;;
-        Hotspot\ only|4) sudo create_ap $interfaceBezicni $interfaceZicni $ssid $lozinka &>/dev/null &
+        Hotspot\ only|4*) sudo create_ap $interfaceBezicni $interfaceZicni $ssid $lozinka &>/dev/null &
         exit;;
-        Disconnect|5) sudo pkill wpa_supplicant
+        Disconnect|5*) sudo pkill wpa_supplicant
         sudo pkill dhcpcd
-        sudo pkill hostapd;;
+        sudo pkill hostapd
+        exit;;
 esac
