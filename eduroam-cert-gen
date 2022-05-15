@@ -1,8 +1,9 @@
 #!/bin/sh
 
-#Skripta za generiranje certifikata za eduroam mrežu. Varijable ispod je potrebno zamijeniti s odgovarajućima.
+#Skripta za generiranje certifikata za eduroam mrežu. Varijable ispod je potrebno zamijeniti s odgovarajućima. Otkomentirati ispod za enkripciju.
 putanja="/home/linux korisničko ime/.cache/ca.foi.hr.der" # ovdje mora biti apsolutna putanja
 user='linux korisničko ime'
+PGPmail='PGP email' # opcionalno
 
 [ "$(whoami)" != "root" ] && exec sudo -- "$0" "$@"
 echo "Unesite e-mail"
@@ -47,11 +48,10 @@ network={
 # Ako nemate, potrebno je generirati GPG ključ pomoću gpg --full-generate-key
 # Otkomentirati naredbe ispod za korištenje, skripta eduroam se sama otkomentira.
 
-# PGPmail='e-mail od GPG certifikata'
 # mv /etc/wpa_supplicant/eduroam /etc/wpa_supplicant/eduroamw /tmp/
 # su - $user -c "gpg --no-tty --encrypt -r $PGPmail /tmp/eduroam"
 # su - $user -c "gpg --no-tty --encrypt -r $PGPmail /tmp/eduroamw"
 # rm /tmp/eduroam /tmp/eduroamw &>/dev/null
 # mv /tmp/eduroam.gpg /tmp/eduroamw.gpg /etc/wpa_supplicant
 # sed -i '13,15s/^# //' eduroam
-# sed -i '35s/^# //' eduroam
+# sed -i '31s/^# //' eduroam
