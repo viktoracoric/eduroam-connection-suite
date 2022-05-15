@@ -3,15 +3,21 @@
 # Skripta za povezivanje s eduroam mrežama. Zamijeniti varijable ispod s odgovarajućima. Certifikate generirati pomoću eduroamCertGen skripte.
 interfaceBezicni="wlp3s0"
 interfaceZicni="enp0s25"
-ssid='ime wifija'
-lozinka='lozinka wifija'
+ssid='ime hotspota'
+lozinka='lozinka hotspota'
+user='linux korisničko ime'
 
 [ "$(whoami)" != "root" ] && exec sudo -- "$0" "$@"
-command -v dmenu >/dev/null && chosen=$(echo -e "Wireless\nWired\nWired with hotspot\nHotspot only\nDisconnect\n" | dmenu -p "Type of connection: ") || echo -e "Nije instaliran dmenu. U nastavku upišite što točno želite:\n1 Wireless\n2 Wired\n3 Wired with hotspot\n4 Hotspot only\n5 Disconnect" && read chosen
+command -v dmenu >/dev/null && chosen=$(echo -e "Wireless\nWired\nWired with hotspot\nHotspot only\nDisconnect\n" | dmenu -p "Type of connection: ") || (echo -e "Nije instaliran dmenu. U nastavku upišite što točno želite:\n1 Wireless\n2 Wired\n3 Wired with hotspot\n4 Hotspot only\n5 Disconnect" && read chosen)
+
+# su - $user -c "gpg --no-tty --output /tmp/eduroam --decrypt /etc/wpa_supplicant/eduroam.gpg &>/dev/null"
+# su - $user -c "gpg --no-tty --output /tmp/eduroamw --decrypt /etc/wpa_supplicant/eduroamw.gpg &>/dev/null"
+# mv /tmp/eduroam /tmp/eduroamw /etc/wpa_supplicant/ &>/dev/null
 
 case $chosen in
         Wireless|1*) sudo wpa_supplicant -i $interfaceBezicni -c /etc/wpa_supplicant/eduroam &
-        sleep 15;sudo dhcpcd $interfaceBezicni;exit;;
+        sleep 15;sudo dhcpcd $interfaceBezicni;
+	exit;;
         Wired|2*) sudo wpa_supplicant -D wired -i $interfaceZicni -c /etc/wpa_supplicant/eduroamw &
         sleep 5;sudo dhcpcd $interfaceZicni;exit;;
         Wired\ with\ hotspot|3*) sudo wpa_supplicant -D wired -i $interfaceZicni -c /etc/wpa_supplicant/eduroamw &
@@ -20,8 +26,10 @@ case $chosen in
         exit;;
         Hotspot\ only|4*) sudo create_ap $interfaceBezicni $interfaceZicni $ssid $lozinka &>/dev/null &
         exit;;
-        Disconnect|5*) sudo pkill wpa_supplicant
-        sudo pkill dhcpcd
-        sudo pkill hostapd
+        Disconnect|5*) sudo pkill wpa_supplicant &>/dev/null
+        sudo pkill dhcpcd &>/dev/null
+        sudo pkill hostapd &>/dev/null
         exit;;
 esac
+
+# rm /etc/wpa_supplicant/eduroam /etc/wpa_supplicant/eduroamw &>/dev/null
